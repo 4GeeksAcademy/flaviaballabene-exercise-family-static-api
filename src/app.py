@@ -25,18 +25,66 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+
+@app.route('/members', methods=['POST'])
+def post_member_data(member):
+    try:
+        member = jackson_family.add_member(member)
+
+        if member is None:
+            return jsonify({'error': 'Member not found'}), 404
+
+        return jsonify(member), 200
+    
+    except Exception as e:
+        print(e)
+        return jsonify({'error': 'Internal Server Error'}), 500
+
+
+@app.route('/member/<int:member_id>', methods=['DELETE'])
+def delete_member(member_id):
+    try:
+        members = jackson_family.delete_member(member_id)
+
+        if member_id not in members:
+            return jsonify({'error': 'Member not found'}), 404
+
+        return jsonify(members), 200
+    
+    except Exception as e:
+        print(e)
+        return jsonify({'error': 'Internal Server Error'}), 500
+
+
 @app.route('/members', methods=['GET'])
-def handle_hello():
+def get_members_data():
+    try:
+        members = jackson_family.get_all_members()
 
-    # this is how you can use the Family datastructure by calling its methods
-    members = jackson_family.get_all_members()
-    response_body = {
-        "hello": "world",
-        "family": members
-    }
+        if members is None:
+            return jsonify({'error': 'Members not found'}), 404
+
+        return jsonify(members), 200
+    
+    except Exception as e:
+        print(e)
+        return jsonify({'error': 'Internal Server Error'}), 500
 
 
-    return jsonify(response_body), 200
+@app.route('/member/<int:member_id>', methods=['GET'])
+def get_member_data(member_id):
+    try:
+        member = jackson_family.get_member(member_id)
+
+        if member is None:
+            return jsonify({'error': 'Member not found'}), 404
+
+        return jsonify(member), 200
+    
+    except Exception as e:
+        print(e)
+        return jsonify({'error': 'Internal Server Error'}), 500
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
