@@ -26,10 +26,11 @@ def sitemap():
     return generate_sitemap(app)
 
 
-@app.route('/members', methods=['POST'])
-def post_member_data(member):
+@app.route('/member', methods=['POST'])
+def post_member_data():
     try:
-        member = jackson_family.add_member(member)
+        data = request.json
+        member = jackson_family.add_member(data)
 
         if member is None:
             return jsonify({'error': 'Member not found'}), 404
@@ -49,7 +50,7 @@ def delete_member(member_id):
         if member_id not in members:
             return jsonify({'error': 'Member not found'}), 404
 
-        return jsonify(members), 200
+        return jsonify({'done': members}), 200
     
     except Exception as e:
         print(e)
